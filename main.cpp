@@ -11,8 +11,7 @@
     -
 */
 ///while in main, cu persoana logata si while in run cu actiunile propriu zise
-///!!!!!!!!!!!!!!!!!!!!!!!!de implementat admin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+///de implementat legatura dintre un cont si locul sau din catalog
 #define MAX_SIZE 100
 
 class Account
@@ -47,17 +46,19 @@ public:
 
     Account operator=(Account &rhs)
     {
-        if(*this != rhs)
+        /*if(*this != rhs)
         {
             delete[] this -> user;
             delete[] this -> pass;
-        }
+        }*/
 
         this -> user = new char[strlen(rhs.user) + 1];
         this -> pass = new char[strlen(rhs.pass) + 1];
 
         strcpy(this -> user, rhs.user);
         strcpy(this -> pass, rhs.pass);
+
+        std :: cout << "IN SUPERSCRIERE =: " << this -> user << " " << this -> pass;
 
         return *this;
     }
@@ -137,6 +138,7 @@ void Student ::change_name(const char *buff_name)
     name = new char[strlen(buff_name) + 1];
 
     strcpy(name, buff_name);
+    grades = new int[4];
 }
 
 void Student ::add_grades(int *v, int no)
@@ -161,22 +163,22 @@ void admin_log_in()
 
     while(1)
     {
-        std :: cout << "Ce actiune ati dori sa urmati?\n1. Adaugare Student\n2. Adaugare Note\n3. Afisare Note\n";
+        std :: cout << "Ce actiune ati dori sa urmati?\n1. Adaugare Student\n2. Adaugare Note\n3. Afisare Note\n4. Log Out";
         fflush(stdin);
 
         int action;
         std :: cin >> action;
 
         switch(action) {
-            case 1: {
+            case 1:
+            {
                 char buff_name[20];
                 std::cout << "Intoduceti numele studentului (Prenume + Nume):";
                 fflush(stdin);
                 std::cin.getline(buff_name, 20);
-                std::cout << "Schimb in " << buff_name;
 
                 int last_unused = 0;
-                while (!strcmp(studs[last_unused].get_name(), "null"))
+                while (strcmp(studs[last_unused].get_name(), "null"))
                     last_unused++;
 
                 studs[last_unused].change_name(buff_name);
@@ -192,10 +194,15 @@ void admin_log_in()
                 std::cin.getline(buff_name, 20);
 
                 int index = 0;
-                while (!strcmp(studs[index].get_name(), "null"))
-                    index++;
+                char buff_cmp[20];
+                strcpy(buff_cmp, studs[index].get_name());
+                while (strcmp(buff_cmp, buff_name) && index < MAX_SIZE)
+                {
+                    //std::cout << "BROTHERRR";
+                    strcpy(buff_cmp, studs[++index].get_name());
+                }
 
-                std::cout << "Introduceti numarul de note pe care vreti sa le introduceti si pe acestea: \n";
+                std::cout << index << " Introduceti numarul de note pe care vreti sa le introduceti si pe acestea: \n";
                 fflush(stdin);
 
                 int nr, v[4];
@@ -217,18 +224,31 @@ void admin_log_in()
                 std::cin.getline(buff_name, 20);
 
                 int index = 0;
-                while (!strcmp(studs[index].get_name(), "null"))
+                while (strcmp(studs[index].get_name(), buff_name))
                     index++;
 
                 studs[index].get_grades();
+                break;
             }
+            case 4:
+                return;
+            default:
+                std :: cout << "Alegeti una dintre optiunile afisate!";
+                break;
         }
     }
 }
 
 void logged_in(Account a)
 {
+    char buff_name[20];
+    strcpy(buff_name, a.get_user());
     std :: cout << "Bine ai venit, " << a.get_user() << "!\n";
+    int index = 0;
+    while (strcmp(studs[index].get_name(), buff_name) && index < MAX_SIZE) {
+        index++;
+        std :: cout << index << " ";
+    }
     while(1)
     {
         int action; ///1 - interogare note, 2 - log out
@@ -239,10 +259,13 @@ void logged_in(Account a)
         switch (action)
         {
             case 1:
-                ///afisare note;
+                studs[index].get_grades();
                 break;
             case 2:
                 return;
+            default:
+                std :: cout << "Alegeti una dintre optiunile afisate!";
+                break;
         }
     }
 }
@@ -264,26 +287,29 @@ void log_in(Account *v, const int index)
     std :: cout << "Introduceti parola: " << std :: endl;
     std :: cin >> buff_pass;
 
-    for(int i = 0; i < index; i++)
+    if(!strcmp(buff_name, "Admin01") && !strcmp(buff_pass, "Admin01"))
     {
-        if(!strcmp(buff_name, v[i].get_user()))
+        admin_log_in();
+    }
+    else
+    {
+        for (int i = 0; i < index; i++)
         {
-            if(!strcmp(buff_pass, v[i].get_pass()))
+            if (!strcmp(buff_name, v[i].get_user()))
             {
-                if(!strcmp(buff_name, "Admin01"))
+                if (!strcmp(buff_pass, v[i].get_pass()))
                 {
-                    admin_log_in();
+                    logged_in(v[i]);
+                    return;
                 }
-                logged_in(v[i]);
-            }
-            else
-            {
-                std :: cout << "Parola introdusa este gresita!";
-                return;
+                else
+                {
+                    std::cout << "Parola introdusa este gresita!";
+                    return;
+                }
             }
         }
-    }
-
+    }x
     std :: cout << "Nu aveti un cont creat!";
 }
 
@@ -294,15 +320,14 @@ int main()
     int index = 0;
     v = new Account[MAX_SIZE];
 
-    std :: cout << "Catalog Virtual\n";
+    std :: cout << "=======Catalog Virtual=======\n";
     while(1)
     {
         int action;
         std::cout << "\nCe actiune ati dori sa urmati:\n1. Login\t2. Creeare cont\t3. Exit" << std::endl;
         std :: cin >> action;
 
-        switch(action)
-        {
+        switch(action) {
             case 1:
                 log_in(v, index);
                 break;
@@ -315,7 +340,7 @@ int main()
                 first_name = new char[strlen(buff) + 1];
                 strcpy(first_name, buff);
 
-                std::cout << std :: endl << "Introduceti numele: "; ///citirea numelui
+                std::cout << std::endl << "Introduceti numele: "; ///citirea numelui
                 fflush(stdin);
                 std::cin >> buff;
                 last_name = new char[strlen(buff) + 1];
@@ -327,18 +352,22 @@ int main()
                 pass = new char[strlen(buff) + 1];
                 strcpy(pass, buff);
 
-                Account a(strcat( strcat(first_name, " "), last_name), pass);   ///crearea contului
+                Account a(strcat(strcat(first_name, " "), last_name), pass);   ///crearea contului
 
                 v[index++] = a;                                     ///adaugarea contului intr-un vector de conturi
-
+                std::cout << a.get_user() << a.get_pass();
+                std::cout << "De ce, frate?" << first_name << " " << last_name << " " << pass << std::endl;
                 std::cout << "TEST: " << a.get_user() << " " << a.get_pass();
-                for(int i = 0; i < index; i++)
-                    std :: cout << "\n DIN V " << v[i].get_user() << " " << v[i].get_pass() << "\n";
+                for (int i = 0; i < index; i++)
+                    std::cout << "\n DIN V " << v[i].get_user() << " " << v[i].get_pass() << "\n";
                 break;
             }
             case 3:
                 delete[] v;
                 return 0;
+            default:
+                std::cout << "Alegeti una din variantele afisate!\n";
+                break;
         }
     }
 
