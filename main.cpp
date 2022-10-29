@@ -309,7 +309,7 @@ void log_in(Account *v, const int index)
                 }
             }
         }
-    }x
+    }
     std :: cout << "Nu aveti un cont creat!";
 }
 
