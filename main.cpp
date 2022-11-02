@@ -36,11 +36,11 @@
         pentru a testa mai departe functionalitatea.
 */
 
-#define MAX_SIZE 100
+int MAX_SIZE;
 
 class Account
 {
-    char *user, *pass; ///datele referitoare la numele userului si la parola acestuia
+    char *user = nullptr, *pass = nullptr; ///datele referitoare la numele userului si la parola acestuia
     ///aceste date sunt by default private.
 public:
     Account()   ///constructor blank
@@ -70,20 +70,19 @@ public:
 
     Account operator=(Account &rhs) ///pverloading operator =
     {
-        /*if(*this != rhs)
-        {
-            delete[] this -> user;
-            delete[] this -> pass;
-        }*/
+        if(*this != rhs) {
+            delete[] this->user;
+            delete[] this->pass;
 
-        this -> user = new char[strlen(rhs.user) + 1];
-        this -> pass = new char[strlen(rhs.pass) + 1];
 
-        strcpy(this -> user, rhs.user);
-        strcpy(this -> pass, rhs.pass);
+            this->user = new char[strlen(rhs.user) + 1];
+            this->pass = new char[strlen(rhs.pass) + 1];
 
-        //std :: cout << "IN SUPERSCRIERE =: " << this -> user << " " << this -> pass;
+            strcpy(this->user, rhs.user);
+            strcpy(this->pass, rhs.pass);
 
+            //std :: cout << "IN SUPERSCRIERE =: " << this -> user << " " << this -> pass;
+        }
         return *this;
     }
 
@@ -180,7 +179,9 @@ public:
         delete[] name;
         delete[] grades;
     }
-}studs[MAX_SIZE];
+};
+
+Student *studs;
 
 const char* Account :: get_user() const
 {
@@ -310,9 +311,9 @@ void logged_in(Account a)
     strcpy(buff_name, a.get_user());
     std :: cout << "\nBine ai venit, " << a.get_user() << "!\n";
     int index = 0;
-    while (strcmp(studs[index].get_name(), buff_name) && index < MAX_SIZE) {
+    while (index < MAX_SIZE && strcmp(studs[index].get_name(), buff_name)) {
         index++;
-        std :: cout << index << " ";
+        //std :: cout << index << " ";
     }
     while(1)
     {
@@ -382,8 +383,13 @@ int main()
 {
     Account *v;
 
+    int n;
+    std :: cout << "Introduceti numarul de studenti: " << std :: endl;
+    std :: cin >> MAX_SIZE;
+
     int index = 0;
     v = new Account[MAX_SIZE];
+    studs = new Student[MAX_SIZE];
 
     std :: cout << "\n==========Catalog Virtual==========\n";
     while(1)
