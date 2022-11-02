@@ -261,7 +261,7 @@ void admin_log_in()
                 int index = 0;
                 char buff_cmp[20];
                 strcpy(buff_cmp, studs[index].get_name());
-                while (strcmp(buff_cmp, buff_name) && index < MAX_SIZE)
+                while (strcmp(buff_cmp, buff_name) && index < MAX_SIZE - 1)
                 {
                     //std::cout << "test";
                     strcpy(buff_cmp, studs[++index].get_name());
