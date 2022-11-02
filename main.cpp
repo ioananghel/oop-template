@@ -130,6 +130,8 @@ public:
     friend std :: ostream& operator<<(std :: ostream &stream, const Account& a) ///overloading operator << pentru afisare
     {
         std :: cout << a.user << " " << a.pass;
+
+        return stream;
     }
 
     const char* get_user() const;
